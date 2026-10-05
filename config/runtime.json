@@ -1,0 +1,69 @@
+{
+  "_comment": [
+    "Runtime settings (non-secret). Missing keys fall back to built-in defaults."
+  ],
+  "tasks": {
+    "max_parallel": 3,
+    "default_tool_timeout": 300,
+    "tool_timeouts": {},
+    "gui_exclusive": true,
+    "gui_wait": 600
+  },
+  "web_dev": {
+    "port_first": 8765,
+    "port_last": 8799,
+    "desktop_viewport": [
+      1366,
+      850
+    ],
+    "mobile_viewport": [
+      390,
+      844
+    ],
+    "max_fix_rounds": 3,
+    "open_in_browser": true
+  },
+  "coding": {
+    "max_fix_rounds": 3,
+    "test_timeout": 180
+  },
+  "design": {
+    "image_size_hint": "1024x1024",
+    "vector_size": [
+      1024,
+      1024
+    ]
+  },
+  "proactive": {
+    "enabled": true,
+    "max_per_hour": 2,
+    "quiet_hours": [
+      "23:00",
+      "07:00"
+    ],
+    "offer_unfinished_work": true
+  },
+  "voice": {
+    "barge_in": "auto",
+    "barge_in_ratio": 3.0,
+    "barge_in_min_ms": 300,
+    "barge_in_floor_rms": 450,
+    "end_of_turn_silence_ms": null,
+    "start_sensitivity": null,
+    "end_sensitivity": null,
+    "stop_phrases": true,
+    "tts_provider": "gemini_live",
+    "proactive_audio": "auto",
+    "affective_dialog": "auto",
+    "media_resolution": "default",
+    "tool_profile": "full"
+  },
+  "knowledge": {
+    "folders": [],
+    "project_readmes": true,
+    "show_sources": "auto"
+  },
+  "vision": {
+    "max_frame_age_s": 2.5
+  }
+}

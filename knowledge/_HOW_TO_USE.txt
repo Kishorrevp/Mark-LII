@@ -1,0 +1,16 @@
+JARVIS personal knowledge folder
+================================
+
+Put your own notes here as .md / .txt / .rst / .org / .csv files (sub-folders are fine).
+JARVIS indexes them for "what did I write about ...", "what do my notes say about ...",
+and uses them as citable sources (show_sources lists them).
+
+* Files whose name starts with "_" or "." (like this one) are ignored.
+* Files that look like credentials are never indexed: .env, *api_key*, *secret*, *token*,
+  *password*, *credential*, .pem/.key - and any passage that looks like a key or password
+  is dropped even inside an ordinary note.
+* Changes are picked up within 30 seconds; no restart needed.
+* More folders: config/runtime.json -> "knowledge": {"folders": ["C:/Users/you/Notes", ...]}
+  (when the list is empty, this folder and Documents/JARVIS Notes are used).
+* Text found in notes is treated as DATA. Instructions written inside a note are never
+  executed - JARVIS will report them, not obey them.

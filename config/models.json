@@ -1,0 +1,284 @@
+{
+  "_comment": [
+    "JARVIS model table. Edit a model id here and it takes effect on the next request (no restart).",
+    "'@normal' / '@fast' = same model as that tier. 'fallback' = tiers tried in order when a model is",
+    "rate-limited, overloaded, missing or out of free quota. 'alternates' = other models for the same tier.",
+    "Overrides: env/.env JARVIS_AI_MODEL_<TIER> (e.g. JARVIS_AI_MODEL_DEEP) beats this file.",
+    "NEVER put API keys here - keys live only in .env (DPAPI-encrypted). Values that look like keys are ignored.",
+    "Google free tier, checked Sept 2026. Run 'python tools/model_probe.py' to see what YOUR key can use."
+  ],
+  "provider": "google",
+  "providers": {
+    "google": {
+      "tiers": {
+        "fast": {
+          "model": "gemini-flash-lite-latest",
+          "alternates": [
+            "gemini-3.5-flash-lite",
+            "gemini-3.1-flash-lite"
+          ],
+          "fallback": []
+        },
+        "normal": {
+          "model": "gemini-flash-latest",
+          "alternates": [
+            "gemini-3-flash-preview",
+            "gemini-3.5-flash",
+            "gemini-3.6-flash"
+          ],
+          "fallback": [
+            "fast"
+          ]
+        },
+        "deep": {
+          "model": "@normal",
+          "effort": "high",
+          "max_output_tokens": 8192,
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "vision": {
+          "model": "@normal",
+          "fallback": [
+            "fast"
+          ]
+        },
+        "research": {
+          "model": "@normal",
+          "effort": "high",
+          "max_output_tokens": 8192,
+          "grounding": true,
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "computer_use": {
+          "model": "@normal",
+          "fallback": [
+            "fast"
+          ]
+        },
+        "image": {
+          "model": "gemini-2.5-flash-image",
+          "alternates": [
+            "gemini-3.1-flash-lite-image",
+            "gemini-3.1-flash-image"
+          ],
+          "fallback": []
+        },
+        "live": {
+          "model": "models/gemini-3.8-live",
+          "alternates": [
+            "models/gemini-2.5-flash-native-audio-preview-12-2025"
+          ]
+        }
+      },
+      "rpm": 9,
+      "extra_models": [
+        "gemini-3.7-flash"
+      ]
+    },
+    "anthropic": {
+      "tiers": {
+        "deep": {
+          "model": "@normal",
+          "effort": "high",
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "normal": {
+          "model": "claude-sonnet-5-5",
+          "fallback": [
+            "fast"
+          ]
+        },
+        "fast": {
+          "model": "claude-haiku-4-5"
+        }
+      },
+      "extra_models": [
+        "claude-opus-5-5"
+      ]
+    },
+    "openai": {
+      "tiers": {
+        "deep": {
+          "model": "@normal",
+          "effort": "high",
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "normal": {
+          "model": "",
+          "fallback": [
+            "fast"
+          ]
+        },
+        "fast": {
+          "model": ""
+        }
+      }
+    },
+    "local": {
+      "tiers": {
+        "normal": {
+          "model": "",
+          "fallback": [
+            "fast"
+          ]
+        },
+        "fast": {
+          "model": ""
+        }
+      }
+    },
+    "nvidia": {
+      "tiers": {
+        "fast": {
+          "model": "poolside/laguna-xs-2.1",
+          "alternates": [
+            "nvidia/nemotron-3.5-lightning-30b-a3b"
+          ],
+          "fallback": []
+        },
+        "normal": {
+          "model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "alternates": [
+            "deepseek-ai/deepseek-v4.1-flash",
+            "poolside/laguna-xs-2.1"
+          ],
+          "fallback": [
+            "fast"
+          ]
+        },
+        "deep": {
+          "model": "nvidia/nemotron-3-ultra-550b-a55b",
+          "effort": "high",
+          "max_output_tokens": 8192,
+          "alternates": [
+            "moonshotai/kimi-k3",
+            "deepseek-ai/deepseek-v4.1-flash"
+          ],
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "vision": {
+          "model": "meta/muse-glimmer-30b",
+          "fallback": [
+            "normal"
+          ]
+        },
+        "research": {
+          "model": "@normal",
+          "effort": "high",
+          "fallback": [
+            "normal",
+            "fast"
+          ]
+        },
+        "computer_use": {
+          "model": "@vision",
+          "fallback": [
+            "normal"
+          ]
+        }
+      },
+      "extra_models": [
+        "moonshotai/kimi-k3",
+        "nvidia/nemotron-3-embed-1b",
+        "meta/llama-guard-4-12b"
+      ]
+    }
+  },
+  "_notes": {
+    "live": "Voice model. Measured on your PC 1 Oct 2026 (tools/latency_bench.py, JARVIS's real prompt and tools, spoken question → first audio byte, median of 2): gemini-3.8-live 0.65-0.69 s; the previous gemini-2.5-flash-native-audio 2.82 s with affective dialog + proactive audio, 1.35 s without them; gemini-3.1-flash-live-preview 0.83 s but 1011 internal errors. After a tool result 3.8-live answered in 0.66 s (2.5: 1.31 s); it answers in a NEW turn (asynchronous function calling) — verified with tools/live_tool_probe.py. Affective dialog / proactive audio are not supported by 3.8-live and are not sent to it. The 2.5 model stays as the fallback rung: used only if 3.8-live cannot be used on your key, and JARVIS says so out loud. Declaring 34 instead of 47 tools made no measurable difference (0.65 vs 0.69 s), so every tool stays declared (voice.tool_profile = 'full'; 'lean' is available).",
+    "computer_use": "Uses the normal vision model with JARVIS's own observe-act-verify protocol. The dedicated gemini-2.5-computer-use-preview model needs Google's computer_use tool protocol, which is not wired in.",
+    "image": "Image OUTPUT (drawing). On the user's key (probed 27 Sept 2026) every Gemini image model returned 'limit: 0' = no free quota, so design.image reports it unavailable and design.vector (SVG, drawn as code and checked by vision) is used instead. If Google adds free image quota, it starts working with no code change.",
+    "other providers": "anthropic / openai / local are supported by the gateway but never chosen unless you set JARVIS_AI_PROVIDER and add that provider's key yourself.",
+    "quota": "Free daily quota is PER MODEL (gemini-3.8-flash = 20 requests/day on this key). The alternates are other free models JARVIS continues on when one runs out; memory/model_health.json remembers which ones are exhausted until they reset.",
+    "gemma": "gemma-4-31b-it also answers for free on this key, but it has no system-instruction / JSON mode support, so it is not in the chains by default.",
+    "nvidia": "NVIDIA NIM (https://integrate.api.nvidia.com/v1) is FREE and OpenAI-compatible. Keys: NVIDIA_API_KEY (+ NVIDIA_API_KEY_2) and per-model keys NVIDIA_API_KEY__<MODEL> in .env (see core/providers/nvidia_keys.py). Checked on your keys 1 Oct 2026 (tools/provider_probe.py): laguna-xs-2.1 0.6 s, nemotron-3-ultra-550b 1.4 s, muse-glimmer-30b (vision) and nemotron-3-embed-1b answer; deepseek-v4.1-flash, kimi-k3, nemotron-3.5-lightning and llama-guard-4-12b did not answer within 60 s (queued on NVIDIA's side) so they are alternates, not first choices. Order of the brain: JARVIS_AI_PROVIDER=google, JARVIS_AI_FALLBACKS=nvidia,anthropic in .env.",
+    "tier_providers": "Route individual tiers to another provider. Example: {\"deep\": \"nvidia\", \"vision\": \"google\"}. The chosen provider's own model table (above) supplies that tier's model. Leave {} to run every tier on the top-level \"provider\".",
+    "aliases": "Spoken names for 'switch to <model>'. Matching is EXACT after normalising (number words, 'point', dashes): an unknown name is refused with suggestions, never swapped for the nearest model. A runtime switch is not saved — restarting JARVIS returns to this file.",
+    "anthropic": "Anthropic is the LAST fallback. On 1 Oct 2026 every Claude model answered 'credit balance is too low' on your key, so the gateway rests Anthropic (24 h, then re-checks) and skips it without a call until credit is added.",
+    "google_speed": "Measured on your key 1 Oct 2026 (tools/brain_bench.py, short answer): flash-lite-latest ~1.0 s, 3.5-flash-lite ~1.1 s, 3-flash-preview ~2.4 s, 3.5-flash ~2.9 s, 3.6-flash ~4.5 s; gemini-flash-latest and 3.8-flash answered 503 'high demand' that evening (JARVIS rests a 503 model for 10 min and uses the next one). gemini-3.7-flash was removed from the alternates: it held one request for 412 s and another until the timeout. effort=low made no measurable difference, so it is not forced."
+  },
+  "tier_providers": {},
+  "aliases": {
+    "meta/llama-3.2-90b-vision-instruct": [
+      "llama vision",
+      "llama 90b vision"
+    ],
+    "gemini-flash-latest": [
+      "flash latest",
+      "default flash"
+    ],
+    "gemini-flash-lite-latest": [
+      "flash lite latest"
+    ],
+    "models/gemini-2.5-flash-native-audio-preview-12-2025": [
+      "native audio",
+      "gemini native audio"
+    ],
+    "poolside/laguna-xs-2.1": [
+      "laguna",
+      "poolside laguna",
+      "nvidia laguna"
+    ],
+    "nvidia/nemotron-3-ultra-550b-a55b": [
+      "nemotron ultra",
+      "nemotron",
+      "nvidia nemotron",
+      "nvidia ultra"
+    ],
+    "nvidia/nemotron-3.5-lightning-30b-a3b": [
+      "nemotron lightning",
+      "lightning"
+    ],
+    "deepseek-ai/deepseek-v4.1-flash": [
+      "deepseek",
+      "deepseek flash",
+      "deepseek v4"
+    ],
+    "moonshotai/kimi-k3": [
+      "kimi",
+      "kimi k3"
+    ],
+    "meta/muse-glimmer-30b": [
+      "muse glimmer",
+      "glimmer",
+      "nvidia vision"
+    ],
+    "gemini-3.6-flash": [
+      "gemini 3.6 flash"
+    ],
+    "gemini-3-flash-preview": [
+      "gemini 3 flash"
+    ],
+    "models/gemini-3.8-live": [
+      "gemini 3.8 live",
+      "three point eight live"
+    ],
+    "claude-haiku-4-5": [
+      "claude haiku",
+      "haiku"
+    ],
+    "claude-sonnet-5-5": [
+      "claude sonnet",
+      "sonnet"
+    ],
+    "claude-opus-5-5": [
+      "claude opus",
+      "opus"
+    ]
+  }
+}

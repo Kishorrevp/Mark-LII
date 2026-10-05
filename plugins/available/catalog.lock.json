@@ -1,0 +1,17 @@
+{
+  "calculator": {
+    "file": "calculator.py",
+    "sha256": "eb20fc2a73de5ab060b3585b30f6769621f3c8b2f9aaef6e051ff86772d2b2e4",
+    "version": "1.0.0"
+  },
+  "currency_converter": {
+    "file": "currency_converter.py",
+    "sha256": "c3abb650f8e027109f6c3a3cfc5f8e2aab51fdea5dd1bdccf154127372684579",
+    "version": "1.0.0"
+  },
+  "unit_converter": {
+    "file": "unit_converter.py",
+    "sha256": "5de3a5040a802d93d1c5f7acc9247fb96f1ad95ca815ea9304954793748b15ea",
+    "version": "1.0.0"
+  }
+}

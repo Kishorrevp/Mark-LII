@@ -1,0 +1,50 @@
+# ── Secrets — never commit ───────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+config/api_keys.json
+config/certs/
+config/*secret*
+config/*credential*
+*credentials*.json
+*secret*.json
+!*.example.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── Python ───────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ── Runtime state ────────────────────────────────────────────────────────
+memory/*.json
+memory/audit/
+memory/tasks/
+*.log
+*.jsonl
+
+# ── Editor / OS ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.bak
+
+# ── Dev scratch, backups and probe output ────────────────────────────────
+_to_delete/
+voice_samples/
+Claude outputs/
+*.zip
+tools/*.out
+tools/*.err
+tools/*_probe*.json
+tools/*bench.json
+memory/process_logs/
+memory/**/*.tmp
+*.wav
